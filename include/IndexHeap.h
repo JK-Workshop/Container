@@ -1,7 +1,5 @@
-// Copyright (C) 2025 Jarry Yang - All rights reserved
-//
-// You may use, distribute and modify this code under the
-// terms of the MIT license, for details, see LICENCE.md
+// Copyright (C) JK Workshop - All rights reserved
+
 #pragma once
 
 #include <stdlib.h>
@@ -23,7 +21,7 @@ namespace JK::Container {
                 heap->hash[heap->head[p_index]] = p_index;
                 p_index >>= 1;
             }
-            heap->head[ip_index] = p_value;
+            heap->head[p_index] = p_value;
             heap->hash[p_value] = p_index;
         }
         
@@ -44,23 +42,33 @@ namespace JK::Container {
     public:
 
         IndexHeap()
-            : dataCounter(0) {}
+            : dataCounter(0) {
+            // Allocate and initialize this->data and this->indexHash
+        }
         IndexHeap(const IndexHeap& other) -> delete
 
-        ~IndexHeap() {}
+        ~IndexHeap() {
+            // Deallocate this->data and this->indexHash 
+        }
 
-        constexpr size_t Size() const { return this->data.Size(); }
+        [[nodiscard("Queried field not used")]] constexpr size_t Size() const {
+            return this->data.Size();
+        }
 
-        constexpr size_t Count() const { return this->data.Count(); }
+        [[nodiscard("Queried field not used")]] constexpr size_t Count() const {
+            return this->data.Count();
+        }
 
-        constexpr bool Empty() const { return this->Count() == 0; }
-#if (JK_OPTIMIZATION == JK_NO_OPTIMIZATION)
+        [[nodiscard("Queried field not used")]] constexpr bool Empty() const {
+            return this->Count() == 0;
+        }
+#if (JK_OPTIMIZATION_LV == JK_NO_OPTIMIZATION)
 
-#elif (JK_OPTIMIZATION == JK_HALF_HALF)
+#elif (JK_OPTIMIZATION_LV == JK_HALF_HALF)
 
-#elif (JK_OPTIMIZATION == JK_ALLIN_SPEED)
+#elif (JK_OPTIMIZATION_LV == JK_ALLIN_SPEED)
 
-#elif (JK_OPTIMIZATION == JK_ALLIN_SIZE)
+#elif (JK_OPTIMIZATION_LV == JK_ALLIN_SIZE)
 
         void Push(uint32_t p_value) {
             this->update(++heap->cnt);
