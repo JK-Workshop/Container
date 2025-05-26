@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-namespace JK::Container {
+namespace JK {
 
     template<class CONTINER, class COMPARE> class IndexHeap {
 
