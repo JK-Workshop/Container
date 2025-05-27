@@ -178,7 +178,6 @@
     <None Include=".gitignore" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\Allocator.h" />
     <ClInclude Include="include\CompileTime.h" />
     <ClInclude Include="include\IndexHeap.h" />
     <ClInclude Include="include\StaticArray.h" />

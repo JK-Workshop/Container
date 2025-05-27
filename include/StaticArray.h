@@ -4,8 +4,6 @@
 
 #include <stdint.h>
 #include <string.h>
-#include <array>
-#include "CompileTime.h"
 
 #define JK_STACK_ALLOCATE 0
 #define JK_HEAP_ALLOCATE  1
@@ -19,10 +17,10 @@ namespace JK {
 	};
 
 	template<class DATA_T, size_t ARRAY_S, class ITERATOR> class StaticArray {
-		static_assert(std::is_object_v<DATA_T>, "TYPE can only be a basic type or a class\n");
+
 	private:
 
-		DATA_T data[ARRAY_S];
+		constexpr DATA_T data_v[ARRAY_S];
 
 		ITERATOR iterator;
 
@@ -31,7 +29,7 @@ namespace JK {
 		/// Initialize an empty static array
 		/// </summary>
 		constexpr StaticArray()
-			: data(), iterator() {
+			: data_v(), iterator() {
 		}
 		/// <summary>
 		/// 
@@ -42,7 +40,7 @@ namespace JK {
 		/// Query for the number of elements in the static array
 		/// </summary>
 		/// <returns> Number of elements in the static array </returns>
-		[[nodiscard("Unused queried field")]] constexpr size_t Size() const {
+		[[nodiscard("Unused static array size")]] constexpr size_t Size() const {
 			return ARRAY_S;
 		}
 		/// <summary>
@@ -50,35 +48,35 @@ namespace JK {
 		/// </summary>
 		/// <param name="p_data_i"> Index of element to be accessed </param>
 		/// <returns> Value of accessed element </returns>
-		[[nodiscard("Unused queried array element")]] constexpr DATA_T& operator[](size_t p_data_i) {
+		[[nodiscard("Unused static array element")]] constexpr DATA_T& operator[](size_t p_data_i) {
 			//assert(p_index >= this->Size(), "Index out of bound\n");
-			return this->data[p_data_i];
+			return this->data_v[p_data_i];
 		}
 		/// <summary>
 		/// Const access an elemetns through index
 		/// </summary>
 		/// <param name="p_data_i"> Index of element to be accessed </param>
 		/// <returns> Value of accessed element </returns>
-		[[nodiscard("Unused queried array element")]] constexpr DATA_T& operator[](size_t p_data_i) const {
+		[[nodiscard("Unused static array element")]] constexpr DATA_T& operator[](size_t p_data_i) const {
 			//assert(p_index >= this->Size(), "Index out of bound\n");
-			return this->data[p_data_i];
+			return this->data_v[p_data_i];
 		}
 		/// <summary>
 		/// Refill current static array with copy of another array
 		/// </summary>
 		/// <param name="other"></param>
 		constexpr void operator=(StaticArray& other) const {
-			memcpy(other.data, this->data, this->Size());
+			memcpy(other.data_v, this->data_v, this->Size());
 		}
 
 		// TODO: Inplement operator= with other being dynamic array, heap, linked list, BST etc.
 
 		[[nodiscard("Unsed static array begin()")]] constexpr DATA_T* begin() const {
-			return this->data;
+			return this->data_v;
 		}
 
 		[[nodiscard("Unused static array end()")]] constexpr DATA_T* end() const {
-			return this->data + this->Size();
+			return this->data_v + this->Size();
 		}
 
 	};
