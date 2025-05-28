@@ -74,6 +74,5 @@ namespace JK {
 
 	};
 
-	//template<class TYPE, size_t SIZE>
-	//using StaticArray_ = StaticArray<TYPE, SIZE, JK_STACK_ALLOCATION, int>;
+	template<class DATA_T, size_t ARRAY_S> using Array = Array<DATA_T, ARRAY_T, int>;
 }
