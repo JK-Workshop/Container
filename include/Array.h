@@ -8,13 +8,66 @@
 
 namespace JK {
 
-	template<class ITERATEE_T> class Iterator {
-
-	};
-
-	template<class DATA_T, size_t ARRAY_S, Iterator ITERATOR_V> class Array {
+	template<class DATA_T, size_t ARRAY_S, class ITERATOR_T = iterator>
+	class Array {
 
 	private:
+		static class iterator {
+		private:
+			DATA_T* tracker_ptr;
+		public:
+
+			constexpr iterator(DATA_T* p_tracker_ptr) JK_EXCEPT_MODE
+				: tracker_ptr(p_tracker_ptr) {
+				
+			}
+
+			constexpr ~iterator() JK_EXCEPT_MODE {
+
+			}
+
+			constexpr DATA_T& operator*() const JK_EXCEPT_MODE {
+				return *this->tracker_ptr;
+			}
+
+			constexpr DATA_T* operator->() const JK_EXCEPT_MODE {
+				return this->tracker_ptr;
+			}
+
+			constexpr DATA_T& operator[](size_t p_data_i) const JK_EXCEPT_MODE {
+				return tracker_ptr[p_data_i];
+			}
+
+			constexpr iterator& operator++() JK_EXCEPT_MODE {
+				this->tracker_ptr++;
+				return *this;
+			}
+
+			constexpr iterator operator++(int) JK_EXCEPT_MODE {
+				iterator tmpIterator = *this;
+				this->tracker_ptr++;
+				return tmpIterator;
+			}
+
+			constexpr iterator& operator--() JK_EXCEPT_MODE {
+				this->tracker_ptr--;
+				return *this;
+			}
+
+			constexpr iterator operator--(int) JK_EXCEPT_MODE {
+				iterator tmpIterator = *this;
+				this->tracker_ptr--;
+				return tmpIterator;
+			}
+
+			constexpr bool operator==(interator& p_other) {
+				return this->tracker_ptr == p_other.tracker_ptr;
+			}
+
+			constexpr bool operator!=(interator& p_other) {
+				return this->tracker_ptr != p_other.tracker_ptr;
+			}
+		};
 
 		constexpr DATA_T data_v[ARRAY_S];
 
@@ -43,7 +96,7 @@ namespace JK {
 		/// <param name="p_data_i"> Index of element to be accessed </param>
 		/// <returns> Value of accessed element </returns>
 		[[nodiscard("Unused array element")]] constexpr DATA_T& operator[](size_t p_data_i) JK_EXCEPT_MODE {
-			//assert(p_index >= this->Size(), "Index out of bound\n");
+			JK_VERIFY(p_data_i >= this->Size(), "Index out of bound\n");
 			return this->data_v[p_data_i];
 		}
 		/// <summary>
@@ -52,7 +105,7 @@ namespace JK {
 		/// <param name="p_data_i"> Index of element to be accessed </param>
 		/// <returns> Value of accessed element </returns>
 		[[nodiscard("Unused array element")]] constexpr DATA_T& operator[](size_t p_data_i) const JK_EXCEPT_MODE {
-			//assert(p_index >= this->Size(), "Index out of bound\n");
+			JK_VERIFY(p_data_i >= this->Size(), "Index out of bound\n");
 			return this->data_v[p_data_i];
 		}
 		/// <summary>
@@ -63,15 +116,13 @@ namespace JK {
 			memcpy(other.data_v, this->data_v, this->Size());
 		}
 
-		[[nodiscard("Unsed array begin()")]] constexpr DATA_T* begin() const JK_EXCEPT_MODE {
-			return this->data_v;
+		[[nodiscard("Unsed array begin()")]] constexpr ITERATOR_T begin() const JK_EXCEPT_MODE {
+			return ITERATOR_T(this->data_v);
 		}
 
-		[[nodiscard("Unused array end()")]] constexpr DATA_T* end() const JK_EXCEPT_MODE {
-			return this->data_v + this->Size();
+		[[nodiscard("Unused array end()")]] constexpr ITERATOR_T end() const JK_EXCEPT_MODE {
+			return ITERATOR_T(this->data_v + this->Size());
 		}
 
 	};
-
-	template<class DATA_T, size_t ARRAY_S> using Array = Array<DATA_T, ARRAY_T, int>;
 }

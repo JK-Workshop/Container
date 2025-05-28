@@ -6,7 +6,8 @@
 
 namespace JK {
 
-    template<class DATA_T, size_t LIST_S, class ITERATOR> class List {
+    template<class DATA_T, size_t LIST_S, class ITERATOR = iterator> 
+    class List {
         static_assert(LIST_S > 0, "error: Negative initial list size\n");
     private:
 
