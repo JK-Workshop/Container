@@ -1,4 +1,4 @@
-// Copyright (C) JK Workshop - All rights reserved
+// Copyright (c) JK Workshop - All rights reserved
 
 #pragma once
 

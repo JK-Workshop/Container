@@ -1,10 +1,16 @@
-// Copyright (C) JK Workshop - All rights reserved
+// Copyright (c) JK Workshop - All rights reserved
 
 #pragma once
 
-// Optimization levels
-#define JK_NO_OPTIMIZATION 0
-#define JK_ALLIN_SPEED     1
-#define JK_ALLIN_SIZE      2
+#include <stdint.h>
 
-#define JK_OPTIMIZATION_LV JK_NO_OPTIMIZATION
+// Visual Studio debug/release branch
+#if defined(_DEBUG)
+    constexpr bool JK_DEBUG = true;
+    #define JK_EXCEPT_MODE = noexcept(false)
+#elif defined(_NDEBUG)
+    constexpr bool JK_DEBUG = false;
+    #define JK_EXCEPT_MODE = noexcept(true)
+#else
+    #error "Go use Visual Studio"
+#endif

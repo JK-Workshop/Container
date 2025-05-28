@@ -1,11 +1,10 @@
-// Copyright (C) JK Workshop - All rights reserved
+// Copyright (c) JK Workshop - All rights reserved
 
 #pragma once
 
-#include <stdint.h>
 #include <string.h>
 
-#define JK_DEBUG 0
+#include "CompileTime.h"
 
 namespace JK {
 
@@ -23,19 +22,19 @@ namespace JK {
 		/// <summary>
 		/// Initialize an empty static array
 		/// </summary>
-		constexpr Array()
+		constexpr Array() JK_EXCEPT_MODE
 			: data_v(), iterator() {
 		}
 		/// <summary>
 		/// 
 		/// </summary>
-		constexpr ~Array() {
+		constexpr ~Array() JK_EXCEPT_MODE {
 		}
 		/// <summary>
 		/// Query for the number of elements in the static array
 		/// </summary>
 		/// <returns> Number of elements in the static array </returns>
-		[[nodiscard("Unused array size")]] constexpr size_t Size() const {
+		[[nodiscard("Unused array size")]] constexpr size_t Size() const JK_EXCEPT_MODE {
 			return ARRAY_S;
 		}
 		/// <summary>
@@ -43,7 +42,7 @@ namespace JK {
 		/// </summary>
 		/// <param name="p_data_i"> Index of element to be accessed </param>
 		/// <returns> Value of accessed element </returns>
-		[[nodiscard("Unused array element")]] constexpr DATA_T& operator[](size_t p_data_i) {
+		[[nodiscard("Unused array element")]] constexpr DATA_T& operator[](size_t p_data_i) JK_EXCEPT_MODE {
 			//assert(p_index >= this->Size(), "Index out of bound\n");
 			return this->data_v[p_data_i];
 		}
@@ -52,7 +51,7 @@ namespace JK {
 		/// </summary>
 		/// <param name="p_data_i"> Index of element to be accessed </param>
 		/// <returns> Value of accessed element </returns>
-		[[nodiscard("Unused array element")]] constexpr DATA_T& operator[](size_t p_data_i) const {
+		[[nodiscard("Unused array element")]] constexpr DATA_T& operator[](size_t p_data_i) const JK_EXCEPT_MODE {
 			//assert(p_index >= this->Size(), "Index out of bound\n");
 			return this->data_v[p_data_i];
 		}
@@ -60,15 +59,15 @@ namespace JK {
 		/// Reset current array with a copy of another array
 		/// </summary>
 		/// <param name="other"></param>
-		constexpr void operator=(Array& other) const {
+		constexpr void operator=(Array& other) const JK_EXCEPT_MODE {
 			memcpy(other.data_v, this->data_v, this->Size());
 		}
 
-		[[nodiscard("Unsed array begin()")]] constexpr DATA_T* begin() const {
+		[[nodiscard("Unsed array begin()")]] constexpr DATA_T* begin() const JK_EXCEPT_MODE {
 			return this->data_v;
 		}
 
-		[[nodiscard("Unused array end()")]] constexpr DATA_T* end() const {
+		[[nodiscard("Unused array end()")]] constexpr DATA_T* end() const JK_EXCEPT_MODE {
 			return this->data_v + this->Size();
 		}
 
