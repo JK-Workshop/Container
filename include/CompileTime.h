@@ -8,22 +8,23 @@
 
 // Visual Studio debug/release branch
 #if defined(_DEBUG)
-    constexpr bool JK_DEBUG = true;
-    #define JK_VERIFY(CONDITION, MESSAGE) assert(CONDITION, MESSAGE)
-#elif defined(_NDEBUG)
+#	include <assert.h>
+constexpr bool JK_DEBUG = true;
+#	define JK_VERIFY(CONDITION, MESSAGE) assert(CONDITION, MESSAGE)
+#elif defined(NDEBUG)
 #   if defined(JK_BENCHMARK)
-        //#include "Timer.h"
-        #define JK_SET_TIMER(TIMER_INSTANCE)
-        #define JK_LAP_TIMER(TIMER_INSTANCE)
-        #define JK_PAUSE_TIMER(TIMER_INSTANCE)
-        #define JK_END_TIMER(TIMER_INSTANCE)
+#		include "Timer.h"
+#		define JK_SET_TIMER(TIMER_INSTANCE)
+#		define JK_LAP_TIMER(TIMER_INSTANCE)
+#		define JK_PAUSE_TIMER(TIMER_INSTANCE)
+#		define JK_END_TIMER(TIMER_INSTANCE)
 #   else
-        #define JK_SET_TIMER(TIMER_INSTANCE)
-        #define JK_LAP_TIMER(TIMER_INSTANCE)
-        #define JK_PAUSE_TIMER(TIMER_INSTANCE)
-        #define JK_END_TIMER(TIMER_INSTANCE)
+#		define JK_SET_TIMER(TIMER_INSTANCE)
+#		define JK_LAP_TIMER(TIMER_INSTANCE)
+#		define JK_PAUSE_TIMER(TIMER_INSTANCE)
+#		define JK_END_TIMER(TIMER_INSTANCE)
 #   endif
-    constexpr bool JK_DEBUG = false;
-    #define JK_VERYFY(CONDITION, MESSAGE)
+constexpr bool JK_DEBUG = false;
+#define JK_VERIFY(CONDITION, MESSAGE)
 #else
 #endif

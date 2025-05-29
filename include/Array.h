@@ -4,7 +4,6 @@
 
 #include <string.h>
 
-#define _DEBUG
 #include "CompileTime.h"
 
 namespace JK {
@@ -35,7 +34,8 @@ namespace JK {
 			this->tracker_ptr++;
 			return *this;
 		}
-		[[nodiscard("Unused incremented value, use prefix++ instead")]] constexpr ArrayIterator operator++(int) noexcept(!JK_DEBUG) {
+		[[nodiscard("Unused incremented value, use prefix++ instead")]]
+		constexpr ArrayIterator operator++(int) noexcept(!JK_DEBUG) {
 			ArrayIterator tmpIterator = *this;
 			this->tracker_ptr++;
 			return tmpIterator;
@@ -44,7 +44,8 @@ namespace JK {
 			this->tracker_ptr--;
 			return *this;
 		}
-		[[nodiscard("Unused decremented value, use prefix-- instead")]] constexpr ArrayIterator operator--(int) noexcept(!JK_DEBUG) {
+		[[nodiscard("Unused decremented value, use prefix-- instead")]]
+		constexpr ArrayIterator operator--(int) noexcept(!JK_DEBUG) {
 			ArrayIterator tmpIterator = *this;
 			this->tracker_ptr--;
 			return tmpIterator;
@@ -60,13 +61,13 @@ namespace JK {
 	template<class DATA_T, size_t ARRAY_S, class ITERATOR_T = ArrayIterator<DATA_T>>
 	class Array {
 	private:
-		constexpr DATA_T data_v[ARRAY_S];
+		DATA_T data_v[ARRAY_S];
 	public:
 		/// <summary>
-		/// Initialize an empty static array
+		/// Initialize an empty array
 		/// </summary>
 		constexpr Array() noexcept(!JK_DEBUG)
-			: data_v(), iterator() {
+			: data_v() {
 		}
 		/// <summary>
 		/// 
@@ -74,10 +75,11 @@ namespace JK {
 		constexpr ~Array() noexcept(!JK_DEBUG) {
 		}
 		/// <summary>
-		/// Query for the number of elements in the static array
+		/// Query the number of elements in the array
 		/// </summary>
-		/// <returns> Number of elements in the static array </returns>
-		[[nodiscard("Unused array size")]] constexpr size_t Size() const noexcept(!JK_DEBUG) {
+		/// <returns> Number of elements in the array </returns>
+		[[nodiscard("Unused array size")]]
+		constexpr size_t Size() const noexcept(!JK_DEBUG) {
 			return ARRAY_S;
 		}
 		/// <summary>
@@ -85,8 +87,9 @@ namespace JK {
 		/// </summary>
 		/// <param name="p_data_i"> Index of element to be accessed </param>
 		/// <returns> Value of accessed element </returns>
-		[[nodiscard("Unused array element")]] constexpr DATA_T& operator[](size_t p_data_i) noexcept(!JK_DEBUG) {
-			JK_VERIFY(p_data_i >= this->Size(), "Index out of bound\n");
+		[[nodiscard("Unused array element")]]
+		constexpr DATA_T& operator[](size_t p_data_i) noexcept(!JK_DEBUG) {
+			JK_VERIFY(p_data_i <= this->Size(), "Index out of bound\n");
 			return this->data_v[p_data_i];
 		}
 		/// <summary>
@@ -94,8 +97,9 @@ namespace JK {
 		/// </summary>
 		/// <param name="p_data_i"> Index of element to be accessed </param>
 		/// <returns> Value of accessed element </returns>
-		[[nodiscard("Unused array element")]] constexpr DATA_T& operator[](size_t p_data_i) const noexcept(!JK_DEBUG) {
-			JK_VERIFY(p_data_i >= this->Size(), "Index out of bound\n");
+		[[nodiscard("Unused array element")]]
+		constexpr DATA_T& operator[](size_t p_data_i) const noexcept(!JK_DEBUG) {
+			JK_VERIFY(p_data_i <= this->Size(), "Index out of bound\n");
 			return this->data_v[p_data_i];
 		}
 		/// <summary>
@@ -105,10 +109,12 @@ namespace JK {
 		constexpr void operator=(Array& other) const noexcept(!JK_DEBUG) {
 			memcpy(other.data_v, this->data_v, this->Size());
 		}
-		[[nodiscard("Unsed array begin()")]] constexpr ITERATOR_T begin() const noexcept(!JK_DEBUG) {
+		[[nodiscard("Unsed array begin()")]]
+		constexpr ITERATOR_T begin() noexcept(!JK_DEBUG) {
 			return ITERATOR_T(this->data_v);
 		}
-		[[nodiscard("Unused array end()")]] constexpr ITERATOR_T end() const noexcept(!JK_DEBUG) {
+		[[nodiscard("Unused array end()")]]
+		constexpr ITERATOR_T end() noexcept(!JK_DEBUG) {
 			return ITERATOR_T(this->data_v + this->Size());
 		}
 
