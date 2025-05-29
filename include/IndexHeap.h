@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#include "StaticArray.h"
+#include "Array.h"
 
 namespace JK {
 
