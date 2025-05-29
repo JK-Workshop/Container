@@ -9,11 +9,6 @@
 
 namespace JK {
 
-    enum class Heap_t {
-        BINARY_HEAP,
-        FIBONACCI_HEAP
-    };
-
     template<class CONTINER, class COMPARE> class IndexHeap {
 
     private:
