@@ -16,7 +16,7 @@ namespace JK {
 		constexpr ArrayIterator(DATA_T* p_tracker_ptr) noexcept(!JK_DEBUG)
 			: tracker_ptr(p_tracker_ptr) {
 		}
-		constexpr ArrayIterator(ArrayIterator& other) noexcept(!JK_DEBUG)
+		constexpr ArrayIterator(const ArrayIterator& other) noexcept(!JK_DEBUG)
 			: tracker_ptr(other.tracker_ptr) {
 		}
 		constexpr ~ArrayIterator() noexcept(!JK_DEBUG) {
@@ -50,10 +50,10 @@ namespace JK {
 			this->tracker_ptr--;
 			return tmpIterator;
 		}
-		constexpr bool operator==(ArrayIterator& p_other) noexcept(!JK_DEBUG) {
+		constexpr bool operator==(const ArrayIterator& p_other) const noexcept(!JK_DEBUG) {
 			return this->tracker_ptr == p_other.tracker_ptr;
 		}
-		constexpr bool operator!=(ArrayIterator& p_other) noexcept(!JK_DEBUG) {
+		constexpr bool operator!=(const ArrayIterator& p_other) const noexcept(!JK_DEBUG) {
 			return this->tracker_ptr != p_other.tracker_ptr;
 		}
 	};
@@ -68,6 +68,18 @@ namespace JK {
 		/// </summary>
 		constexpr Array() noexcept(!JK_DEBUG)
 			: data_v() {
+		}
+		constexpr Array(const Array& other) noexcept(!JK_DEBUG)
+			: data_v() {
+			*this = other;
+		}
+		constexpr Array(Array&& other) noexcept(!JK_DEBUG)
+			: data_v(other.data_v) {
+			other.data_v = nullptr;
+		}
+		constexpr Array(std::initializer_list<DATA_T> init) noexcept(!JK_DEBUG)
+			: data_v() {
+			memcpy(this->data_v, init.begin(), init.size());
 		}
 		/// <summary>
 		/// 
@@ -107,7 +119,7 @@ namespace JK {
 		/// </summary>
 		/// <param name="other"></param>
 		constexpr void operator=(Array& other) const noexcept(!JK_DEBUG) {
-			memcpy(other.data_v, this->data_v, this->Size());
+			memcpy(this->data_v, other.data_v, this->Size());
 		}
 		[[nodiscard("Unsed array begin()")]]
 		constexpr ITERATOR_T begin() noexcept(!JK_DEBUG) {
