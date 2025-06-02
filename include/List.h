@@ -47,34 +47,54 @@ namespace JK {
 				this->list_c = this->list_s = 0;
 			}
 		}
-
+		/// <summary>
+		/// Number of elements currently in the list
+		/// </summary>
+		/// <returns></returns>
 		[[nodiscard("Unused list count")]]
 		constexpr size_t Count() const noexcept(!JK_DEBUG) {
 			return this->list_c;
 		}
-
+		/// <summary>
+		/// Number of elements the list can currently hold, if its exceeded, the list will grow larger
+		/// </summary>
+		/// <returns></returns>
 		[[nodiscard("Unused list size")]]
 		constexpr size_t Size() const noexcept(!JK_DEBUG) {
 			return this->list_s;
 		}
-
+		/// <summary>
+		/// Access an element through index
+		/// </summary>
+		/// <param name="p_data_i"> Index of element to be accessed </param>
+		/// <returns> Value of accessed element </returns>
 		[[nodiscard("Unused list element")]]
 		constexpr DATA_T& operator[](size_t p_data_i) noexcept(!JK_DEBUG) {
 			return this->data_v[p_data_i];
 		}
-
+		/// <summary>
+		/// Const access an elemetns through index
+		/// </summary>
+		/// <param name="p_data_i"> Index of element to be accessed </param>
+		/// <returns> Value of accessed element </returns>
 		[[nodiscard("Unused list element")]]
 		constexpr DATA_T& operator[](size_t p_data_i) const noexcept(!JK_DEBUG) {
 			return this->data_v[p_data_i];
 		}
-
+		/// <summary>
+		/// Push an element to the end of the list
+		/// </summary>
+		/// <param name="p_data_v"> Value of pushed element </param>
 		constexpr void operator<<(const DATA_T& p_data_v) noexcept(!JK_DEBUG) {
 			this->data_v[this->list_c++] = p_data_v;
 			if (this->list_c >= this->list_s) {
 				this->grow();
 			}
 		}
-
+		/// <summary>
+		/// Pop an element from the end of the list
+		/// </summary>
+		/// <param name="p_data_v"> Value of popped element </param>
 		constexpr void operator>>(DATA_T& p_data_v) noexcept(!JK_DEBUG) {
 			p_data_v = this->data_v[--this->list_c];
 			if (this->list_c < (this->list_s >> 1)) {
@@ -82,12 +102,12 @@ namespace JK {
 			}
 		}
 		[[nodiscard("Unsed list begin()")]]
-		constexpr ITERATOR_T* begin() noexcept(!JK_DEBUG) {
+		constexpr ITERATOR_T begin() noexcept(!JK_DEBUG) {
 			return ITERATOR_T(this->data_v);
 		}
 		[[nodiscard("Unused list end()")]]
-		constexpr ITERATOR_T* end() noexcept(!JK_DEBUG) {
-			return ITERATOR_T(this->data_v + this->data_c);
+		constexpr ITERATOR_T end() noexcept(!JK_DEBUG) {
+			return ITERATOR_T(this->data_v + this->list_c);
 		}
 	};
 
