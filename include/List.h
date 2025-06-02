@@ -9,25 +9,41 @@
 
 namespace JK {
 
-	template<class DATA_T, size_t LIST_S, class ITERATOR_T = LinearIterator<DATA_T>>
+	template<class DATA_T, size_t LIST_S = 32, class ITERATOR_T = LinearIterator<DATA_T>>
 	class List {
 		static_assert(LIST_S > 0, "error: Negative initial list size\n");
 	private:
 		DATA_T* data_v;
 		size_t list_c, list_s;
 
-		constexpr doubleSize() JK_EXCEPT_MODE {
-			// Reallocate memotry with doubled size for data_v
-		}
-	public:
-		constexpr List() JK_EXCEPT_MODE
-			: data_v(new DATA_T[INIT_LIST_S]), list_c(0), list_s(LIST_S) {
+		void grow() noexcept(!JK_DEBUG) {
+			DATA_T* data_vtmp = (DATA_T*)realloc(this->data_v, this->list_s << 1);
+			// No elsewhere reallocation
+			if (this->data_v == data_vtmp)  return;
+			// Moving data_v to new slots
+			for (int i = 0; i < this->list_s; ++i)
+				data_vtmp[i] = (DATA_T&&)this->data_v[i];
+			// Growth factor = 2
+			this->list_s <<= 1;
+			free(this->data_v);
+			this->data_v = data_vtmp;
 		}
 
-		constexpr ~List() JK_EXCEPT_MODE {
-			delete[] data_v;
+		void shrink() noexcept(!JK_DEBUG) {
+			// Shrink factor = 2
+			this->list_s >>= 1;
+			realloc(this->data_v, this->list);
+		}
+	public:
+		constexpr List() noexcept(!JK_DEBUG)
+			: data_v((DATA_T*)malloc(LIST_S * sizeof(DATA_T))), list_c(0), list_s(LIST_S) {
+		}
+
+		constexpr ~List() noexcept(!JK_DEBUG) {
+			free(this->data_v);
 			if constexpr (JK_DEBUG) {
-				list_c = list_s = 0;
+				this->data_v = nullptr;
+				this->list_c = this->list_s = 0;
 			}
 		}
 
@@ -59,13 +75,17 @@ namespace JK {
 		constexpr void operator<<(DATA_T p_data_v) noexcept(!JK_DEBUG) {
 			data_v[list_c] = p_data_v;
 			list_c++;
-			if (list_c > list_s)
-				doubleSize();
+			if (list_c > list_s) {
+				this->grow();
+			}
 		}
 
 		constexpr void operator>>(DATA_T& p_data_v) noexcept(!JK_DEBUG) {
 			p_data_v = this->data_v[this->list_c];
 			this->list_c--;
+			if (list_c < (list_s >> 1)) {
+				this->shrink();
+			}
 		}
 		[[nodiscard("Unsed list begin()")]]
 		constexpr ITERATOR_T* begin() noexcept(!JK_DEBUG) {

@@ -3,6 +3,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <stdlib.h>
 #include <type_traits>
 #include <utility>
 
