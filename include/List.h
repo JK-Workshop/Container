@@ -11,28 +11,29 @@ namespace JK {
 
 	template<class DATA_T, size_t LIST_S = 32, class ITERATOR_T = LinearIterator<DATA_T>>
 	class List {
-		static_assert(LIST_S > 0, "error: Negative initial list size\n");
+		static_assert(LIST_S > 0, "error: Initial list size must be positive\n");
 	private:
 		DATA_T* data_v;
 		size_t list_c, list_s;
 
 		void grow() noexcept(!JK_DEBUG) {
-			DATA_T* data_vtmp = (DATA_T*)realloc(this->data_v, this->list_s << 1);
-			// No elsewhere reallocation
-			if (this->data_v == data_vtmp)  return;
-			// Moving data_v to new slots
-			for (int i = 0; i < this->list_s; ++i)
-				data_vtmp[i] = (DATA_T&&)this->data_v[i];
 			// Growth factor = 2
 			this->list_s <<= 1;
-			free(this->data_v);
-			this->data_v = data_vtmp;
+			this->data_v = (DATA_T*)realloc(this->data_v, this->list_s * sizeof(DATA_T));
+			if (this->data_v == nullptr) {
+				this->~List();
+				JK_DEBUG_BREAK
+			}
 		}
 
 		void shrink() noexcept(!JK_DEBUG) {
 			// Shrink factor = 2
 			this->list_s >>= 1;
-			realloc(this->data_v, this->list);
+			this->data_v = (DATA_T*)realloc(this->data_v, this->list_s * sizeof(DATA_T));
+			if (this->data_v == nullptr) {
+				this->~List();
+				JK_DEBUG_BREAK
+			}
 		}
 	public:
 		constexpr List() noexcept(!JK_DEBUG)
@@ -54,11 +55,6 @@ namespace JK {
 
 		[[nodiscard("Unused list size")]]
 		constexpr size_t Size() const noexcept(!JK_DEBUG) {
-			return -1;
-		}
-
-		[[nodiscard("Unused list max size")]]
-		constexpr size_t MaxSize() const noexcept(!JK_DEBUG) {
 			return this->list_s;
 		}
 
@@ -72,18 +68,16 @@ namespace JK {
 			return this->data_v[p_data_i];
 		}
 
-		constexpr void operator<<(DATA_T p_data_v) noexcept(!JK_DEBUG) {
-			data_v[list_c] = p_data_v;
-			list_c++;
-			if (list_c > list_s) {
+		constexpr void operator<<(const DATA_T& p_data_v) noexcept(!JK_DEBUG) {
+			this->data_v[this->list_c++] = p_data_v;
+			if (this->list_c >= this->list_s) {
 				this->grow();
 			}
 		}
 
 		constexpr void operator>>(DATA_T& p_data_v) noexcept(!JK_DEBUG) {
-			p_data_v = this->data_v[this->list_c];
-			this->list_c--;
-			if (list_c < (list_s >> 1)) {
+			p_data_v = this->data_v[--this->list_c];
+			if (this->list_c < (this->list_s >> 1)) {
 				this->shrink();
 			}
 		}

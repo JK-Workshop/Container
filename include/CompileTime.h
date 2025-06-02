@@ -8,6 +8,7 @@
 #include <utility>
 
 // Visual Studio debug/release branch
+#define JK_DEBUG_BREAK __debugbreak();
 #if defined(_DEBUG)
 #	include <assert.h>
 constexpr bool JK_DEBUG = true;
