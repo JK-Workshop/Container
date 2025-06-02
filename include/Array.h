@@ -5,60 +5,11 @@
 #include <string.h>
 
 #include "CompileTime.h"
+#include "Iterator/LinearIterator.h"
 
 namespace JK {
 
-	template<class DATA_T>
-	class ArrayIterator {
-	private:
-		DATA_T* tracker_ptr;
-	public:
-		constexpr ArrayIterator(DATA_T* p_tracker_ptr) noexcept(!JK_DEBUG)
-			: tracker_ptr(p_tracker_ptr) {
-		}
-		constexpr ArrayIterator(const ArrayIterator& other) noexcept(!JK_DEBUG)
-			: tracker_ptr(other.tracker_ptr) {
-		}
-		constexpr ~ArrayIterator() noexcept(!JK_DEBUG) {
-		}
-		constexpr DATA_T& operator*() const noexcept(!JK_DEBUG) {
-			return *this->tracker_ptr;
-		}
-		constexpr DATA_T* operator->() const noexcept(!JK_DEBUG) {
-			return this->tracker_ptr;
-		}
-		constexpr  DATA_T& operator[](size_t p_data_i) const noexcept(!JK_DEBUG) {
-			return tracker_ptr[p_data_i];
-		}
-		constexpr ArrayIterator& operator++() noexcept(!JK_DEBUG) {
-			this->tracker_ptr++;
-			return *this;
-		}
-		[[nodiscard("Unused incremented value, use prefix++ instead")]]
-		constexpr ArrayIterator operator++(int) noexcept(!JK_DEBUG) {
-			ArrayIterator tmpIterator = *this;
-			this->tracker_ptr++;
-			return tmpIterator;
-		}
-		constexpr ArrayIterator& operator--() noexcept(!JK_DEBUG) {
-			this->tracker_ptr--;
-			return *this;
-		}
-		[[nodiscard("Unused decremented value, use prefix-- instead")]]
-		constexpr ArrayIterator operator--(int) noexcept(!JK_DEBUG) {
-			ArrayIterator tmpIterator = *this;
-			this->tracker_ptr--;
-			return tmpIterator;
-		}
-		constexpr bool operator==(const ArrayIterator& p_other) const noexcept(!JK_DEBUG) {
-			return this->tracker_ptr == p_other.tracker_ptr;
-		}
-		constexpr bool operator!=(const ArrayIterator& p_other) const noexcept(!JK_DEBUG) {
-			return this->tracker_ptr != p_other.tracker_ptr;
-		}
-	};
-
-	template<class DATA_T, size_t ARRAY_S, class ITERATOR_T = ArrayIterator<DATA_T>>
+	template<class DATA_T, size_t ARRAY_S, class ITERATOR_T = LinearIterator<DATA_T>>
 	class Array {
 	private:
 		DATA_T data_v[ARRAY_S];
@@ -129,6 +80,6 @@ namespace JK {
 		constexpr ITERATOR_T end() noexcept(!JK_DEBUG) {
 			return ITERATOR_T(this->data_v + this->Size());
 		}
-
 	};
+
 }

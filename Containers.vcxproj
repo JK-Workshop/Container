@@ -71,20 +71,20 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)bin\$(Configuration)\$(Platform)\</OutDir>
-    <IntDir>$(SolutionDir)interm\$(Configuration)\$(Platform)\</IntDir>
+    <OutDir>$(SolutionDir)Bin\$(Configuration)\$(Platform)\</OutDir>
+    <IntDir>$(SolutionDir)Interm\$(Configuration)\$(Platform)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)bin\$(Configuration)\$(Platform)\</OutDir>
-    <IntDir>$(SolutionDir)interm\$(Configuration)\$(Platform)\</IntDir>
+    <OutDir>$(SolutionDir)Bin\$(Configuration)\$(Platform)\</OutDir>
+    <IntDir>$(SolutionDir)Interm\$(Configuration)\$(Platform)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)bin\$(Configuration)\$(Platform)\</OutDir>
-    <IntDir>$(SolutionDir)interm\$(Configuration)\$(Platform)\</IntDir>
+    <OutDir>$(SolutionDir)Bin\$(Configuration)\$(Platform)\</OutDir>
+    <IntDir>$(SolutionDir)Interm\$(Configuration)\$(Platform)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(SolutionDir)bin\$(Configuration)\$(Platform)\</OutDir>
-    <IntDir>$(SolutionDir)interm\$(Configuration)\$(Platform)\</IntDir>
+    <OutDir>$(SolutionDir)Bin\$(Configuration)\$(Platform)\</OutDir>
+    <IntDir>$(SolutionDir)Interm\$(Configuration)\$(Platform)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -207,6 +207,7 @@
     <ClInclude Include="include\Array.h" />
     <ClInclude Include="include\CompileTime.h" />
     <ClInclude Include="include\IndexHeap.h" />
+    <ClInclude Include="Include\Iterator\LinearIterator.h" />
     <ClInclude Include="include\List.h" />
     <ClInclude Include="include\OrderedList.h" />
   </ItemGroup>
