@@ -1,16 +1,14 @@
-#include "../Include/List.h"
+#include <List.h>
 #include <iostream>
 #include <string>
 
 int main() {
-	JK::List<float, 1> strPool;
+	JK::List<std::string*> strPool;
 	int i = 100;
+	std::string str = "abc";
 	while (i--) {
 		std::cout << strPool.Count() << ' ' << strPool.Size() << '\n';
-		strPool << 1.0f;
-	}
-	for (auto value : strPool) {
-		std::cout << value;
+		strPool << &str;
 	}
 	return 0;
 }
