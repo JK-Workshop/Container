@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <stdlib.h>
 #include <string.h>
 
 #include "CompileTime.h"
@@ -9,41 +10,49 @@
 
 namespace JK {
 
-	template<class DATA_T, size_t ARRAY_S, class ITERATOR_T = LinearIterator<DATA_T>>
+	template<class DATA_T, uint32_t ARRAY_S, class ITERATOR_T = LinearIterator<DATA_T>>
 	class Array {
 	private:
 		DATA_T data_v[ARRAY_S];
 	public:
 		/// <summary>
-		/// Initialize an empty array
+		/// Initialize an empty array with compile time size
 		/// </summary>
-		constexpr Array() noexcept(!JK_DEBUG)
+		constexpr Array() noexcept(!JK_DEBUG) requires(ARRAY_S != 0)
 			: data_v() {
 		}
+		/// <summary>
+		/// Initialize an empty array with runtime size
+		/// </summary>
+		constexpr Array(uint32_t p_array_s) noexcept(!JK_DEBUG) requires(ARRAY_S == 0)
+			: array_s(p_array_s), data_v((DATA_T*)malloc(this->array_s * sizeof(DATA_T))) {
+		}
+
 		constexpr Array(const Array& other) noexcept(!JK_DEBUG)
 			: data_v() {
-			*this = other;
+			this->operator=(other);
 		}
+		
 		constexpr Array(Array&& other) noexcept(!JK_DEBUG)
 			: data_v(other.data_v) {
 			other.data_v = nullptr;
 		}
-		constexpr Array(std::initializer_list<DATA_T> init) noexcept(!JK_DEBUG)
-			: data_v() {
-			memcpy(this->data_v, init.begin(), init.size());
-		}
 		/// <summary>
-		/// 
+		/// Destroy an array
 		/// </summary>
 		constexpr ~Array() noexcept(!JK_DEBUG) {
+			if constexpr (ARRAY_S == 0)
+				free(this->data_v);
 		}
 		/// <summary>
 		/// Query the number of elements in the array
 		/// </summary>
 		/// <returns> Number of elements in the array </returns>
 		[[nodiscard("Unused array size")]]
-		constexpr size_t Size() const noexcept(!JK_DEBUG) {
-			return ARRAY_S;
+		constexpr uint32_t Size() const noexcept(!JK_DEBUG) {
+			if constexpr (ARRAY_S == 0)
+				return this->array_s;
+			else  return ARRAY_S;
 		}
 		/// <summary>
 		/// Access an element through index
@@ -51,8 +60,7 @@ namespace JK {
 		/// <param name="p_data_i"> Index of element to be accessed </param>
 		/// <returns> Value of accessed element </returns>
 		[[nodiscard("Unused array element")]]
-		constexpr DATA_T& operator[](size_t p_data_i) noexcept(!JK_DEBUG) {
-			JK_VERIFY(p_data_i <= this->Size(), "Index out of bound\n");
+		constexpr DATA_T& operator[](uint32_t p_data_i) noexcept(!JK_DEBUG) {
 			return this->data_v[p_data_i];
 		}
 		/// <summary>
@@ -61,16 +69,24 @@ namespace JK {
 		/// <param name="p_data_i"> Index of element to be accessed </param>
 		/// <returns> Value of accessed element </returns>
 		[[nodiscard("Unused array element")]]
-		constexpr DATA_T& operator[](size_t p_data_i) const noexcept(!JK_DEBUG) {
-			JK_VERIFY(p_data_i <= this->Size(), "Index out of bound\n");
+		constexpr DATA_T& operator[](uint32_t p_data_i) const noexcept(!JK_DEBUG) {
 			return this->data_v[p_data_i];
 		}
 		/// <summary>
-		/// Reset current array with a copy of another array
+		/// Reset this array with the values of other array (ct <- ct and rt <- rt)
 		/// </summary>
 		/// <param name="other"></param>
-		constexpr void operator=(Array& other) const noexcept(!JK_DEBUG) {
-			memcpy(this->data_v, other.data_v, this->Size());
+		constexpr void operator=(const Array& other) const noexcept(!JK_DEBUG) {
+			memcpy(this->data_v, other.data_v, this->Size() * sizeof(DATA_T));
+		}
+		/// <summary>
+		/// Reset this array with the values of other array (ct <- rt)
+		/// </summary>
+		/// <param name="other"></param>
+		constexpr void operator=(const Array<DATA_T, 0, ITERATOR_T>& other) const noexcept(!JK_DEBUG) requires(ARRAY_S != 0) {
+			if (this->Size() < other.Size())
+				memcpy(this->data_v, other.data_v, this->Size() * sizeof(DATA_T));
+			else   memcpy(this->data_v, other.data_v, other.Size() * sizeof(DATA_T));
 		}
 		[[nodiscard("Unsed array begin()")]]
 		constexpr ITERATOR_T begin() noexcept(!JK_DEBUG) {

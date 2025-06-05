@@ -9,37 +9,41 @@
 
 namespace JK {
 
-	template<class DATA_T, size_t LIST_S = 32, class ITERATOR_T = LinearIterator<DATA_T>>
+	template<class DATA_T, uint32_t LIST_S = 32, class ITERATOR_T = LinearIterator<DATA_T>>
 	class List {
-		static_assert(LIST_S > 0, "error: Initial list size must be positive\n");
+		static_assert(LIST_S > 0, "Error: Initial list size must be positive\n");
 	private:
 		DATA_T* data_v;
-		size_t list_c, list_s;
-
+		uint32_t list_c, list_s;
+		/// <summary>
+		/// Expand list size by a particutlar growth factor
+		/// </summary>
 		void grow() noexcept(!JK_DEBUG) {
 			// Growth factor = 2
 			this->list_s <<= 1;
 			this->data_v = (DATA_T*)realloc(this->data_v, this->list_s * sizeof(DATA_T));
 			if (this->data_v == nullptr) {
 				this->~List();
-				JK_DEBUG_BREAK
+				JK_RT_BREAK
 			}
 		}
-
+		/// <summary>
+		/// Reduce list size by a particular shrink factor
+		/// </summary>
 		void shrink() noexcept(!JK_DEBUG) {
 			// Shrink factor = 2
 			this->list_s >>= 1;
 			this->data_v = (DATA_T*)realloc(this->data_v, this->list_s * sizeof(DATA_T));
 			if (this->data_v == nullptr) {
 				this->~List();
-				JK_DEBUG_BREAK
+				JK_RT_BREAK
 			}
 		}
 	public:
 		constexpr List() noexcept(!JK_DEBUG)
 			: data_v((DATA_T*)malloc(LIST_S * sizeof(DATA_T))), list_c(0), list_s(LIST_S) {
 		}
-
+		
 		constexpr ~List() noexcept(!JK_DEBUG) {
 			free(this->data_v);
 			if constexpr (JK_DEBUG) {
@@ -52,7 +56,7 @@ namespace JK {
 		/// </summary>
 		/// <returns></returns>
 		[[nodiscard("Unused list count")]]
-		constexpr size_t Count() const noexcept(!JK_DEBUG) {
+		constexpr uint32_t Count() const noexcept(!JK_DEBUG) {
 			return this->list_c;
 		}
 		/// <summary>
@@ -60,7 +64,7 @@ namespace JK {
 		/// </summary>
 		/// <returns></returns>
 		[[nodiscard("Unused list size")]]
-		constexpr size_t Size() const noexcept(!JK_DEBUG) {
+		constexpr uint32_t Size() const noexcept(!JK_DEBUG) {
 			return this->list_s;
 		}
 		/// <summary>
@@ -69,7 +73,7 @@ namespace JK {
 		/// <param name="p_data_i"> Index of element to be accessed </param>
 		/// <returns> Value of accessed element </returns>
 		[[nodiscard("Unused list element")]]
-		constexpr DATA_T& operator[](size_t p_data_i) noexcept(!JK_DEBUG) {
+		constexpr DATA_T& operator[](uint32_t p_data_i) noexcept(!JK_DEBUG) {
 			return this->data_v[p_data_i];
 		}
 		/// <summary>
@@ -78,7 +82,7 @@ namespace JK {
 		/// <param name="p_data_i"> Index of element to be accessed </param>
 		/// <returns> Value of accessed element </returns>
 		[[nodiscard("Unused list element")]]
-		constexpr DATA_T& operator[](size_t p_data_i) const noexcept(!JK_DEBUG) {
+		constexpr DATA_T& operator[](uint32_t p_data_i) const noexcept(!JK_DEBUG) {
 			return this->data_v[p_data_i];
 		}
 		/// <summary>
