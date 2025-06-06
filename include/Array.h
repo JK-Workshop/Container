@@ -10,10 +10,12 @@
 
 namespace JK {
 
-	template<class DATA_T, uint32_t ARRAY_S, class ITERATOR_T = LinearIterator<DATA_T>>
+	template<class DATA_T, uint32_t ARRAY_S = 0, class ITERATOR_T = LinearIterator<DATA_T>>
 	class Array {
+		static_assert(ARRAY_S >= 0, "Error: array size shouldn't be negative.");
 	private:
-		DATA_T data_v[ARRAY_S];
+		uint32_t array_s;
+		typename std::conditional_t<ARRAY_S == 0, DATA_T*, DATA_T[ARRAY_S]> data_v;
 	public:
 		/// <summary>
 		/// Initialize an empty array with compile time size
@@ -25,24 +27,15 @@ namespace JK {
 		/// Initialize an empty array with runtime size
 		/// </summary>
 		constexpr Array(uint32_t p_array_s) noexcept(!JK_DEBUG) requires(ARRAY_S == 0)
-			: array_s(p_array_s), data_v((DATA_T*)malloc(this->array_s * sizeof(DATA_T))) {
-		}
-
-		constexpr Array(const Array& other) noexcept(!JK_DEBUG)
-			: data_v() {
-			this->operator=(other);
-		}
-		
-		constexpr Array(Array&& other) noexcept(!JK_DEBUG)
-			: data_v(other.data_v) {
-			other.data_v = nullptr;
+			: array_s(p_array_s), data_v((DATA_T*)malloc(p_array_s * sizeof(DATA_T))) {
 		}
 		/// <summary>
 		/// Destroy an array
 		/// </summary>
 		constexpr ~Array() noexcept(!JK_DEBUG) {
-			if constexpr (ARRAY_S == 0)
+			if constexpr (ARRAY_S == 0) {
 				free(this->data_v);
+			}
 		}
 		/// <summary>
 		/// Query the number of elements in the array

@@ -1,12 +1,19 @@
-#include <Array.h>
+#include "../Include/Array.h"
 #include <iostream>
 #include <string>
 
 int main() {
-	JK::Array<int, 3> a;
-	a[0] = 0, a[1] = 1, a[2] = 2;
-	JK::Array<int> b(5);
-	b[0] = 0, b[1] = 1, b[2] = 2, b[3] = 3, b[4] = 4;
+	JK::Array<int, 5> a;
+	for (auto& value : a) {
+		value = 0;
+	}
+	uint32_t c;
+	std::cin >> c;
+	JK::Array<int> b(c);
+	printf("%u\n", b.Size());
+	for (auto& value : b) {
+		value = 1;
+	}
 	for (auto value : a) {
 		std::cout << value << ' ';
 	}

@@ -1,4 +1,7 @@
-#pragma once
+// Copyright (c) JK Workshop - All rights reserved
+
+#if !defined(JK_LINEAR_ITERATOR_H)
+#define JK_LINEAR_ITERATOR_H
 
 #include "CompileTime.h"
 
@@ -11,51 +14,59 @@ namespace JK {
 	template<class DATA_T>
 	class LinearIterator {
 	private:
-		DATA_T* tracker_ptr;
+		DATA_T* pointer;
 	public:
-		constexpr LinearIterator(DATA_T* p_tracker_ptr) noexcept(!JK_DEBUG)
-			: tracker_ptr(p_tracker_ptr) {
+		constexpr LinearIterator(DATA_T* p_pointer) noexcept
+			: pointer(p_pointer) {
 		}
-		constexpr LinearIterator(const LinearIterator& other) noexcept(!JK_DEBUG)
-			: tracker_ptr(other.tracker_ptr) {
+		constexpr LinearIterator(const LinearIterator& p_other) noexcept
+			: pointer(p_other.pointer) {
 		}
-		constexpr ~LinearIterator() noexcept(!JK_DEBUG) {
+		LinearIterator& operator=(const LinearIterator& p_other) {
+			p_other.pointer = this->pointer;
 		}
-		constexpr DATA_T& operator*() const noexcept(!JK_DEBUG) {
-			return *this->tracker_ptr;
+		// ------------- Delete unecessary functions ------------- //
+		LinearIterator() = delete;
+		LinearIterator(LinearIterator&&) = delete;
+		LinearIterator& operator=(LinearIterator&&) = delete;
+
+		constexpr DATA_T& operator*() const noexcept {
+			return *this->pointer;
 		}
-		constexpr DATA_T* operator->() const noexcept(!JK_DEBUG) {
-			return this->tracker_ptr;
+		constexpr DATA_T* operator->() const noexcept {
+			return this->pointer;
 		}
-		constexpr  DATA_T& operator[](uint32_t p_data_i) const noexcept(!JK_DEBUG) {
-			return tracker_ptr[p_data_i];
+		constexpr DATA_T& operator[](uint32_t p_data_i) const noexcept {
+			return pointer[p_data_i];
 		}
-		constexpr LinearIterator& operator++() noexcept(!JK_DEBUG) {
-			this->tracker_ptr++;
+		constexpr LinearIterator& operator++() noexcept {
+			++this->pointer;
 			return *this;
 		}
-		constexpr LinearIterator& operator--() noexcept(!JK_DEBUG) {
-			this->tracker_ptr--;
+		constexpr LinearIterator& operator--() noexcept {
+			--this->pointer;
 			return *this;
 		}
 		[[nodiscard("Unused incremented value, use prefix operator++ instead")]]
-		constexpr LinearIterator operator++(int) noexcept(!JK_DEBUG) {
-			LinearIterator Iterator_tmp = *this;
-			this->tracker_ptr++;
-			return Iterator_tmp;
+		constexpr LinearIterator operator++(int) noexcept {
+			LinearIterator tmpIterator = *this;
+			++*this;
+			return tmpIterator;
 		}
 		[[nodiscard("Unused decremented value, use prefix operator-- instead")]]
-		constexpr LinearIterator operator--(int) noexcept(!JK_DEBUG) {
-			LinearIterator Iterator_tmp = *this;
-			this->tracker_ptr--;
-			return Iterator_tmp;
+		constexpr LinearIterator operator--(int) noexcept {
+			LinearIterator tmpIterator = *this;
+			--*this;
+			return tmpIterator;
 		}
-		constexpr bool operator==(const LinearIterator& p_other) const noexcept(!JK_DEBUG) {
-			return this->tracker_ptr == p_other.tracker_ptr;
+		constexpr bool operator==(const LinearIterator& p_other) const noexcept {
+			return this->pointer == p_other.pointer;
 		}
-		constexpr bool operator!=(const LinearIterator& p_other) const noexcept(!JK_DEBUG) {
-			return this->tracker_ptr != p_other.tracker_ptr;
+		constexpr bool operator!=(const LinearIterator& p_other) const noexcept {
+			return !(*this == p_other);
 		}
 	};
 
 }
+
+#endif // JK_LINEAR_ITERATOR_H
