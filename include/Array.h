@@ -6,13 +6,13 @@
 #include <string.h>
 
 #include "CompileTime.h"
-#include "Iterator/LinearIterator.h"
+#include "LinearIterator.h"
+
 
 namespace JK {
 
 	template<class DATA_T, uint32_t ARRAY_S = 0, class ITERATOR_T = LinearIterator<DATA_T>>
 	class Array {
-		static_assert(ARRAY_S >= 0, "Error: array size shouldn't be negative.");
 	private:
 		uint32_t array_s;
 		typename std::conditional_t<ARRAY_S == 0, DATA_T*, DATA_T[ARRAY_S]> data_v;
@@ -20,7 +20,7 @@ namespace JK {
 		/// <summary>
 		/// Initialize an empty array with compile time size
 		/// </summary>
-		constexpr Array() noexcept(!JK_DEBUG) requires(ARRAY_S != 0)
+		constexpr Array() noexcept requires(ARRAY_S != 0)
 			: data_v() {
 		}
 		/// <summary>
@@ -42,7 +42,7 @@ namespace JK {
 		/// </summary>
 		/// <returns> Number of elements in the array </returns>
 		[[nodiscard("Unused array size")]]
-		constexpr uint32_t Size() const noexcept(!JK_DEBUG) {
+		constexpr uint32_t Size() const noexcept {
 			if constexpr (ARRAY_S == 0)
 				return this->array_s;
 			else  return ARRAY_S;
@@ -54,6 +54,12 @@ namespace JK {
 		/// <returns> Value of accessed element </returns>
 		[[nodiscard("Unused array element")]]
 		constexpr DATA_T& operator[](uint32_t p_data_i) noexcept(!JK_DEBUG) {
+			if constexpr (JK_DEBUG) {
+				if (o_data_i >= this->Size()) {
+					throw std::runtime_error("Error: Array index overflow.");
+					JK_RT_BREAK
+				}
+			}
 			return this->data_v[p_data_i];
 		}
 		/// <summary>

@@ -3,15 +3,14 @@
 #pragma once
 
 #include "CompileTime.h"
-#include "Iterator/LinearIterator.h"
-
-#include <vector>
+#include "LinearIterator.h"
 
 namespace JK {
 
 	template<class DATA_T, uint32_t LIST_S = 32, class ITERATOR_T = LinearIterator<DATA_T>>
 	class List {
-		static_assert(LIST_S > 0, "Error: Initial list size must be positive\n");
+		static_assert(!std::is_class_v<DATA_T>, "Error: Only basic types are accessible, consider class pointer instead.");
+		static_assert(LIST_S != 0, "Error: List size should be at least 1.");
 	private:
 		DATA_T* data_v;
 		uint32_t list_c, list_s;
@@ -22,7 +21,7 @@ namespace JK {
 			// Growth factor = 2
 			this->list_s <<= 1;
 			this->data_v = (DATA_T*)realloc(this->data_v, this->list_s * sizeof(DATA_T));
-			if (this->data_v == nullptr) {
+			[[likely(false)]] if (this->data_v == nullptr) {
 				this->~List();
 				JK_RT_BREAK
 			}
@@ -34,7 +33,7 @@ namespace JK {
 			// Shrink factor = 2
 			this->list_s >>= 1;
 			this->data_v = (DATA_T*)realloc(this->data_v, this->list_s * sizeof(DATA_T));
-			if (this->data_v == nullptr) {
+			[[likely(false)]] if (this->data_v == nullptr) {
 				this->~List();
 				JK_RT_BREAK
 			}
@@ -43,7 +42,7 @@ namespace JK {
 		constexpr List() noexcept(!JK_DEBUG)
 			: data_v((DATA_T*)malloc(LIST_S * sizeof(DATA_T))), list_c(0), list_s(LIST_S) {
 		}
-		
+
 		constexpr ~List() noexcept(!JK_DEBUG) {
 			free(this->data_v);
 			if constexpr (JK_DEBUG) {
