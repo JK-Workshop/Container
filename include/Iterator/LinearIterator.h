@@ -3,7 +3,7 @@
 #if !defined(JK_LINEAR_ITERATOR_H)
 #define JK_LINEAR_ITERATOR_H
 
-#include "CompileTime.h"
+#include "CompileTime/UniversalCT.h"
 
 namespace JK {
 

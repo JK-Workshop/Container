@@ -207,9 +207,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Array.h" />
-    <ClInclude Include="include\IndexHeap.h" />
+    <ClInclude Include="Include\IndexHeap\BinaryHeap.h" />
+    <ClInclude Include="Include\IndexHeap\FibonacciHeap.h" />
+    <ClInclude Include="Include\IndexHeap\IndexHeap.h" />
     <ClInclude Include="Include\Iterator\LinearIterator.h" />
-    <ClInclude Include="include\List.h" />
+    <ClInclude Include="include\ArrayList.h" />
     <ClInclude Include="include\OrderedList.h" />
   </ItemGroup>
   <ItemGroup>
