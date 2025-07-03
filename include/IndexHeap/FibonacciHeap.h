@@ -1,17 +1,17 @@
 // Copyright (c) JK Workshop - All rights reserved
 
-#include "IndexHeap.h"
+#include "../IndexHeap.h"
 
 namespace JK {
 
-#	define IHeap IndexHeap<HEAP_S, COMPARE_T, IHeapImpl::FIBONACCI_HEAP>
+#define indexHeap IndexHeap<HEAP_S, JK::IHeapImpl::FIBONACCI_HEAP, COMPARATOR_T>
 
-	template<uint32_t HEAP_S, class COMPARE_T>
-	class IHeap {
+	template<JK::UintFast_t auto HEAP_S, class COMPARATOR_T>
+	class indexHeap {
 	public:
 	private:
 	};
 
-#	undef IHeap
+#undef indexHeap
 
 }

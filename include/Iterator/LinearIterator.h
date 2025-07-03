@@ -3,7 +3,7 @@
 #if !defined(JK_LINEAR_ITERATOR_H)
 #define JK_LINEAR_ITERATOR_H
 
-#include "CompileTime/UniversalCT.h"
+#include "CompileTime.h"
 
 namespace JK {
 
@@ -23,11 +23,12 @@ namespace JK {
 			: pointer(p_other.pointer) {
 		}
 		LinearIterator& operator=(const LinearIterator& p_other) {
-			p_other.pointer = this->pointer;
+			this->pointer = p_other.pointer;
 		}
+
 		// ------------- Delete unecessary functions ------------- //
+
 		LinearIterator() = delete;
-		LinearIterator(LinearIterator&&) = delete;
 		LinearIterator& operator=(LinearIterator&&) = delete;
 
 		constexpr DATA_T& operator*() const noexcept {
