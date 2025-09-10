@@ -3,44 +3,25 @@
 #if !defined(JK_INDEX_HEAP)
 #define JK_INDEX_HEAP
 
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wc++98-compat-pedantic"
-#pragma clang diagnostic ignored "-Wold-style-cast"
-#endif
-
 #include "CompileTime.h"
+
+#include <array>
+#include <span>
+#include <memory>
 
 namespace JK {
 
-	enum class IHeapImpl : uint32_t {
-		COSTUM_IMPL    = 0,
-		BINARY_HEAP    = 1,
-		FIBONACCI_HEAP = 2
-	};
+   enum class IndexHeapImpl_e : uint32_t {
+      COSTUMED = 0,
+      BINARY = 1,
+      FIBONACCI = 2
+   };
 
-	template<JK::UintFast_t auto HEAP_S, JK::IHeapImpl IMPLEMENTATION, class COMPARATOR_T>
-	class IndexHeap {};
-}
+   template <class SIZE_T, const SIZE_T HEAP_S, class COMPARATOR_T, IndexHeapImpl_e IMPL_E>
+   class IndexHeap {};
+} // namespace JK
 
 #include "IndexHeap/BinaryHeap.h"
 #include "IndexHeap/FibonacciHeap.h"
-
-#define indexHeap IndexHeap<HEAP_S, IMPLEMENTATION, COMPARATOR_T>
-
-namespace JK {
-	
-	template<JK::UintFast_t auto HEAP_S, JK::IHeapImpl IMPLEMENTATION, class COMPARATOR_T>
-	constexpr indexHeap Make_IndexHeap(COMPARATOR_T&& p_comparator_m) {
-		return indexHeap(std::forward<COMPARATOR_T>(p_comparator_m));
-	}
-
-}
-
-#undef indexHeap
-
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 
 #endif // JK_INDEX_HEAP

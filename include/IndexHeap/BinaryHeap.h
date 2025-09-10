@@ -1,182 +1,151 @@
 // Copyright (c) JK Workshop - All rights reserved
-
-#include <stdlib.h>
-#include <string.h>
+//
+// Binary heap implementation of index heap
 
 #include "../IndexHeap.h"
 
+#define TEMPLATE template <class SIZE_T, const SIZE_T HEAP_S, class COMPARATOR_T>
+#define CLASS_NAME IndexHeap<SIZE_T, HEAP_S, COMPARATOR_T, IndexHeapImpl_e::BINARY>
+
 namespace JK {
 
-#define indexHeap IndexHeap<HEAP_S, JK::IHeapImpl::BINARY_HEAP, COMPARATOR_T>
+   TEMPLATE class CLASS_NAME {
+    private:
+      using DataView_t = std::conditional_t<HEAP_S == std::dynamic_extent, std::span<SIZE_T>, std::span<SIZE_T, HEAP_S + 1>>;
+      using HashList_t = std::conditional_t<HEAP_S == std::dynamic_extent, std::unique_ptr<SIZE_T[]>, std::array<SIZE_T, HEAP_S>>;
 
-	template<JK::UintFast_t auto HEAP_S, class COMPARATOR_T>
-	class indexHeap {
-		using SIZE_T = decltype(HEAP_S);
-	public:
-		constexpr IndexHeap(COMPARATOR_T&& p_comparator_m) noexcept;
+    public:
+      IndexHeap() = delete;
+      constexpr IndexHeap(const SIZE_T* p_data_l, const COMPARATOR_T& p_comparator) noexcept
+         requires(HEAP_S != std::dynamic_extent);
+      constexpr IndexHeap(const SIZE_T* p_data_l, const SIZE_T p_heap_s, const COMPARATOR_T& p_comparator) noexcept
+         requires(HEAP_S == std::dynamic_extent);
 
-		constexpr ~IndexHeap() noexcept;
-		/// <summary>
-		/// Size of heap
-		/// </summary>
-		/// <returns> size of heap </returns>
-		constexpr SIZE_T Size() const noexcept;
-		/// <summary>
-		/// Whether or not the heap is empty
-		/// </summary>
-		/// <returns> true if it's empty, false otherwise </returns>
-		constexpr bool IsEmpty() const noexcept;
-		/// <summary>
-		/// Value at the top of heap
-		/// </summary>
-		/// <returns> value at the top of heap, in JK_DEBUG mode, returns -1 if heap is empty </returns>
-		constexpr SIZE_T Top() const noexcept;
-		/// <summary>
-		/// Push a value into heap
-		/// </summary>
-		/// <param name="p_target_v"> value to be pushed </param>
-		/// <returns> At JK_DEBUG mode, return HEAP_FULL if pushing to a full heap, HEAP_SUCCESS instead </returns>
-		constexpr void operator<<(const SIZE_T p_target_v) noexcept;
-		/// <summary>
-		/// Pop and return a value from heap
-		/// </summary>
-		/// <param name="p_target_v"> holds popped value </param>
-		/// <returns> At JK_DEBUG mode, return HEAP_EMPTY if poping from an empty heap, HEAP_SUCCESS instead </returns>
-		constexpr void operator>>(SIZE_T& p_target_v) noexcept;
-		/// <summary>
-		/// Pop a value from heap
-		/// </summary>
-		constexpr void Pop() noexcept;
-		/// <summary>
-		/// Update the heap only if a value "decreased"
-		/// </summary>
-		/// <param name="p_target_v"> value that "decreased" </param>
-		/// <returns> At JK_DEBUG mode, return HEAP_VALUE_NOT_FOUND if updating a value not in the heap </returns>
-		constexpr void Update(const SIZE_T p_target_v) noexcept;
-	private:
-		SIZE_T data_c;
-		SIZE_T data_v[HEAP_S + 1];
-		SIZE_T hash_v[HEAP_S];
-		COMPARATOR_T comparator_m;
-		/// <summary>
-		/// Update logic
-		/// </summary>
-		/// <param name="p_target_i"> index of heap node to be updated </param>
-		constexpr void update(SIZE_T p_target_i) noexcept;
-		/// <summary>
-		/// Downdate logic
-		/// </summary>
-		/// <param name="p_target_i"> index of heap node to be downdated </param>
-		constexpr void downdate(SIZE_T p_target_i) noexcept;
-	};
+      constexpr ~IndexHeap() noexcept {};
 
-	// -------------------------------------------- Definition -------------------------------------------- //
+      JK_NODISCARD constexpr auto Count() const noexcept -> SIZE_T { return this->data_c; }
 
-	template<JK::UintFast_t auto HEAP_S, class COMPARATOR_T>
-	constexpr indexHeap::IndexHeap(COMPARATOR_T&& p_comparator_m) noexcept
-		: data_c(0), data_v(), hash_v(), comparator_m(std::forward<COMPARATOR_T>(p_comparator_m)) {
-		// Set all hash result to 0 for later error detection
-		if (JK_DEBUG)  memset(hash_v, 0, HEAP_S);
-	}
+      JK_NODISCARD constexpr auto Size() const noexcept -> SIZE_T { return this->data_l.size() - 1; }
 
-	template<JK::UintFast_t auto HEAP_S, class COMPARATOR_T>
-	constexpr indexHeap::~IndexHeap() noexcept {}
+      JK_NODISCARD constexpr auto IsEmpty() const noexcept -> bool { return this->Count() == 0; }
 
-	template<JK::UintFast_t auto HEAP_S, class COMPARATOR_T>
-	[[nodiscard("Unused heap size.")]]
-	constexpr indexHeap::SIZE_T indexHeap::Size() const noexcept { return HEAP_S; }
+      JK_NODISCARD constexpr auto IsFull() const noexcept -> bool { return this->Count() == this->Size(); }
 
-	template<JK::UintFast_t auto HEAP_S, class COMPARATOR_T>
-	[[nodiscard("Unused heap empty query.")]]
-	constexpr bool indexHeap::IsEmpty() const noexcept { return this->data_c == 0; }
+      JK_NODISCARD constexpr auto Top() const noexcept -> SIZE_T;
 
-	template<JK::UintFast_t auto HEAP_S, class COMPARATOR_T>
-	[[nodiscard("Unused heap top.")]]
-	constexpr indexHeap::SIZE_T indexHeap::Top() const noexcept {
-		if constexpr (JK_DEBUG)
-			if (this->IsEmpty()) {
-				this->~IndexHeap();
-				JK_RT_BREAK("Unable to query the Top of an empty heap")
-			}
-		return this->data_v[1];
-	}
+      constexpr auto Push(const SIZE_T p_Target_v) noexcept -> void;
 
-	template<JK::UintFast_t auto HEAP_S, class COMPARATOR_T>
-	constexpr void indexHeap::operator<<(const indexHeap::SIZE_T p_target_v) noexcept {
-		if constexpr (JK_DEBUG)
-			if (this->data_c == this->Size()) {
-				this->~IndexHeap();
-				JK_RT_BREAK("Unable to Push into a full heap")
-			}
-		++data_c;
-		this->data_v[this->data_c] = p_target_v;
-		this->update(this->data_c);
-	}
+      constexpr auto Pop() noexcept -> SIZE_T;
 
-	template<JK::UintFast_t auto HEAP_S, class COMPARATOR_T>
-	constexpr void indexHeap::operator>>(indexHeap::SIZE_T& p_target_v) noexcept {
-		p_target_v = this->Top();
-		this->Pop();
-	}
+      template <class DATA_T>
+      constexpr auto Update(const DATA_T* p_Data_l, const SIZE_T p_Target_v, const DATA_T p_NewData_v) noexcept -> void;
 
-	template<JK::UintFast_t auto HEAP_S, class COMPARATOR_T>
-	constexpr void indexHeap::Pop() noexcept {
-		if constexpr (JK_DEBUG)  this->hash_v[this->Top()] = 0;
-		this->data_v[1] = this->data_v[this->data_c];
-		--this->data_c;
-		this->downdate(1);
-	}
+    private:
+      SIZE_T data_c = SIZE_T(0);
+      DataView_t data_l;
+      HashList_t hash_l = HashList_t();
+      COMPARATOR_T comparator;
 
-	template<JK::UintFast_t auto HEAP_S, class COMPARATOR_T>
-	constexpr void indexHeap::Update(const indexHeap::SIZE_T p_target_v) noexcept {
-		if constexpr (JK_DEBUG)
-			if (this->hash_v[p_target_v] == 0) {
-				this->~IndexHeap();
-				JK_RT_BREAK("Unable to Update an nonexist heap element")
-			}
-		this->update(this->hash_v[p_target_v]);
-	}
+      constexpr auto shiftUp(SIZE_T p_Target_i) noexcept -> void;
 
-	template<JK::UintFast_t auto HEAP_S, class COMPARATOR_T>
-	constexpr void indexHeap::update(indexHeap::SIZE_T p_target_i) noexcept {
-		SIZE_T this_v = this->data_v[p_target_i];
-		SIZE_T up_i = p_target_i >> 1;  // parent of p_target_i
-		while (up_i != 0) {             // as long as not reaching the top
-			if (this->comparator_m(this_v, this->data_v[up_i])) {
-				this->hash_v[
-					this->data_v[p_target_i] = this->data_v[up_i]
-				] = p_target_i;         // bubble up_i down
-				p_target_i = up_i;
-				up_i >>= 1;
-			}
-			else  break;
-		}
-		this->hash_v[
-			this->data_v[p_target_i] = this_v
-		] = p_target_i;
-	}
+      constexpr auto shiftDown(SIZE_T p_Target_i) noexcept -> void;
+   };
 
-	template<JK::UintFast_t auto HEAP_S, class COMPARATOR_T>
-	constexpr void indexHeap::downdate(indexHeap::SIZE_T p_target_i) noexcept {
-		SIZE_T this_v = this->data_v[p_target_i];
-		SIZE_T down_i = p_target_i << 1;    // "smaller" child of p_target_i
-		SIZE_T last_i = this->data_c >> 1;  // last non-leaf node
-		while (p_target_i <= last_i) {      // as long as not reaching the bottom
-			down_i += this->comparator_m(this->data_v[down_i + 1], this->data_v[down_i]);  // the smaller one
-			if (this->comparator_m(this->data_v[down_i], this_v)) {  // even the "smaller" one is "larger"
-				this->hash_v[
-					this->data_v[p_target_i] = this->data_v[down_i]
-				] = p_target_i;             // bubble down_i up
-				p_target_i = down_i;
-				down_i <<= 1;
-			}
-			else  break;
-		}
-		this->hash_v[
-			this->data_v[p_target_i] = this_v
-		] = p_target_i;
-	}
+   // -------------------------------------------- Definition -------------------------------------------- //
 
-#undef indexHeap
+   TEMPLATE constexpr CLASS_NAME::IndexHeap(const SIZE_T* p_Data_l, const COMPARATOR_T& p_Comparator) noexcept
+      requires(HEAP_S != std::dynamic_extent)
+      : data_l(const_cast<SIZE_T*>(p_Data_l - 1), HEAP_S + 1),
+        comparator(p_Comparator)
+   {
+      // Zero out hash list for future debug use
+      if constexpr (JK_DEBUG)
+         std::memset(this->hash_l, 0, HEAP_S * sizeof(SIZE_T));
+   }
 
-}
+   TEMPLATE constexpr CLASS_NAME::IndexHeap(const SIZE_T* p_Data_t, const SIZE_T p_Heap_s, const COMPARATOR_T& p_Comparator) noexcept
+      requires(HEAP_S == std::dynamic_extent)
+      : data_l(const_cast<SIZE_T*>(p_Data_l - 1), p_Heap_s + 1),
+        hash_l(std::make_unique<SIZE_T[]>(p_Heap_s)),
+        comparator(p_Comparator)
+   {
+      // Zero out hash list for future debug use
+      if constexpr (JK_DEBUG)
+         std::memset(this->hash_l, 0, p_Heap_s * sizeof(SIZE_T));
+   }
+
+   TEMPLATE constexpr auto CLASS_NAME::Top() const noexcept -> SIZE_T
+   {
+      JK_VERIFY(this->IsEmpty() == false);
+      return this->data_l[1];
+   }
+
+   TEMPLATE constexpr auto CLASS_NAME::Push(const SIZE_T p_Target_v) noexcept -> void
+   {
+      JK_VERIFY(this->IsFull() == false);
+      ++this->data_c;
+      this->data_l[this->data_c] = p_Target_v;
+      this->shiftUp(this->data_c);
+   }
+
+   TEMPLATE constexpr auto CLASS_NAME::Pop() noexcept -> SIZE_T
+   {
+      // Zero the hash value of top for future debug use
+      if constexpr (JK_DEBUG)
+         this->hash_l[this->Top()] = 0;
+      SIZE_T l_Popped_v = this->Top();
+      this->data_l[1] = this->data_l[this->data_c];
+      --this->data_c;
+      this->shiftDown(1);
+      return l_Popped_v;
+   }
+
+   TEMPLATE template <class DATA_T>
+   constexpr auto CLASS_NAME::Update(const DATA_T* p_Data_l, const SIZE_T p_Target_v, const DATA_T p_NewData_v) noexcept -> void
+   {
+      JK_VERIFY(this->comparator(p_NewData_v, p_Data_l[p_Target_v]));
+      // Check for p_target_v is in the heap
+      JK_VERIFY(this->hash_l[p_Target_v] != 0);
+      this->shiftUp(this->hash_l[p_Target_v]);
+   }
+
+   TEMPLATE constexpr auto CLASS_NAME::shiftUp(SIZE_T p_Target_i) noexcept -> void
+   {
+      SIZE_T l_This_v = this->data_l[p_Target_i];
+      SIZE_T l_Up_i = p_Target_i >> 1; // parent index of p_target_i
+      while (l_Up_i != 0) {            // as long as not reaching the top
+         if (this->comparator(l_This_v, this->data_l[l_Up_i])) {
+            this->data_l[p_Target_i] = this->data_l[l_Up_i]; // bubble down up_i
+            this->hash_l[this->data_l[p_Target_i]] = p_Target_i;
+            p_Target_i = l_Up_i;
+            l_Up_i >>= 1;
+         } else
+            break;
+      }
+      this->data_l[p_Target_i] = l_This_v;
+      this->hash_l[l_This_v] = p_Target_i;
+   }
+
+   TEMPLATE constexpr auto CLASS_NAME::shiftDown(SIZE_T p_Target_i) noexcept -> void
+   {
+      SIZE_T l_This_v = this->data_l[p_Target_i];
+      SIZE_T l_Down_i = p_Target_i << 1;                                                               // "smaller" child of p_target_i between the two
+      SIZE_T l_Last_i = this->data_c >> 1;                                                             // last non-leaf node
+      while (p_Target_i <= l_Last_i) {                                                                 // as long as not reaching the bottom
+         this->comparator(this->data_l[l_Down_i + 1], this->data_l[l_Down_i]) ? ++l_Down_i : l_Down_i; // the "smaller" one
+         if (this->comparator(this->data_l[l_Down_i], l_This_v)) {                                     // even the "smaller" one is "larger"
+            this->data_l[p_Target_i] = this->data_l[l_Down_i];                                         // bubble up down_i
+            this->hash_l[this->data_l[p_Target_i]] = p_Target_i;
+            p_Target_i = l_Down_i;
+            l_Down_i <<= 1;
+         } else
+            break;
+      }
+      this->data_l[p_Target_i] = l_This_v;
+      this->hash_l[l_This_v] = p_Target_i;
+   }
+
+} // namespace JK
+
+#undef CLASS_NAME
+#undef TMEPLATE
