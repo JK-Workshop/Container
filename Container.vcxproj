@@ -102,7 +102,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdclatest</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(JK_API_PATH)Include\JK;$(ProjectDir);</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(JK_API_PATH)Include\JK;</AdditionalIncludeDirectories>
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <ExceptionHandling>false</ExceptionHandling>
@@ -114,6 +114,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -126,7 +127,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdclatest</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(JK_API_PATH)Include\JK;$(ProjectDir);</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(JK_API_PATH)Include\JK;</AdditionalIncludeDirectories>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <ExceptionHandling>false</ExceptionHandling>
@@ -148,7 +149,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdclatest</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(JK_API_PATH)Include\JK;$(ProjectDir);</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(JK_API_PATH)Include\JK;</AdditionalIncludeDirectories>
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <ExceptionHandling>false</ExceptionHandling>
@@ -160,6 +161,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -172,7 +174,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdclatest</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(JK_API_PATH)Include\JK;$(ProjectDir);</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(JK_API_PATH)Include\JK;</AdditionalIncludeDirectories>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <ExceptionHandling>false</ExceptionHandling>
@@ -188,18 +190,22 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Include\Array.h" />
+    <ClInclude Include="Include\Queue.h" />
     <ClInclude Include="Include\RangeAggregateList.h" />
     <ClInclude Include="Include\List.h" />
-    <ClInclude Include="Include\IndexHeap\BinaryHeap.h" />
-    <ClInclude Include="Include\IndexHeap\FibonacciHeap.h" />
-    <ClInclude Include="Include\IndexHeap.h" />
+    <ClInclude Include="Include\Heap\Binary.h" />
+    <ClInclude Include="Include\Heap\Fibonacci.h" />
+    <ClInclude Include="Include\Heap.h" />
     <ClInclude Include="Include\Iterator\LinearIterator.h" />
     <ClInclude Include="Include\OrderedList.h" />
     <ClInclude Include="Include\List\DynamicList.h" />
     <ClInclude Include="Include\RangeAggregateList\FenwickTree.h" />
+    <ClInclude Include="Include\UnionFindSet.h" />
     <ClInclude Include="Test\DynamicList.h" />
-    <ClInclude Include="Test\IndexHeap.h" />
+    <ClInclude Include="Test\Heap.h" />
     <ClInclude Include="Test\StaticList.h" />
+    <ClInclude Include="Test\Timer.h" />
+    <ClInclude Include="Test\UnionFindSet.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\Main.cpp" />

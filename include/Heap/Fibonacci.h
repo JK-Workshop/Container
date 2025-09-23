@@ -1,6 +1,6 @@
 // Copyright (c) JK Workshop - All rights reserved
 
-#include "../IndexHeap.h"
+#include "../Heap.h"
 
 namespace JK {
 

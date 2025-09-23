@@ -1,7 +1,10 @@
-#include "../Test/IndexHeap.h"
+//#include "../Test/UnionFindSet.h"
+#include "../Test/Heap.h"
 
-int main() {
-   Test_IndexHeap();
+auto main() -> int
+{
+   Test_Heap();
+   // Test_UnionFindSet();
 
    return 0;
 }
