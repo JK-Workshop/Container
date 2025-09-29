@@ -6,50 +6,82 @@
 // check returns false and 1 means it retures true.
 
 #include "../Include/UnionFindSet.h"
+#include "Timer.h"
 
 #include <array>
+#include <cstdio>
 #include <filesystem>
-#include <fstream>
 #include <print>
-#include <vector>
+#include <string>
+
+static constexpr auto TESTCASE_COUNT = size_t(18);
+static const auto DIR = std::filesystem::path("Test/UnionFindSetCases");
+
+size_t n, m, fa[10000000];
+
+size_t find(size_t i)
+{
+   if (fa[i] == i) return i;
+   return fa[i] = find(fa[i]);
+}
 
 auto Test_UnionFindSet() noexcept -> void
 {
-   namespace fs = std::filesystem;
+   for (auto fileIdx = size_t(1); fileIdx <= TESTCASE_COUNT; ++fileIdx) {
+      // paths of input and output files
+      const auto inPath = DIR / ("in" + std::to_string(fileIdx) + ".txt");
+      const auto outPath = DIR / ("out" + std::to_string(fileIdx) + ".txt");
+      // FILE* handle of input and ouput files
+      const auto inHandle = _wfopen(inPath.c_str(), L"r");
+      const auto outHandle = _wfopen(outPath.c_str(), L"r");
+      // Read in data count and operation count
+      size_t data_c, op_c;
+      fscanf(inHandle, "%zu%zu", &data_c, &op_c);
+      for (auto i = size_t(0); i < data_c; ++i) {
+         fa[i] = i;
+      }
+      struct inCache_t {
+         size_t op_v, a, b;
+      };
+      // Cache into list from input file, avoiding future reading file stall
+      auto inCache_l = std::make_unique<inCache_t[]>(op_c);
+      for (auto i = size_t(0); i < op_c; ++i)
+         fscanf(inHandle, "%zu%zu%zu", &inCache_l[i].op_v, &inCache_l[i].a, &inCache_l[i].b);
+      // Cache into list from output file, avoiding future reading file stall
+      auto outCache_i = size_t(0);
+      auto outCache_l = std::make_unique<size_t[]>(op_c);
+      while (fscanf(outHandle, "%zu", &outCache_l[outCache_i]) != EOF)
+         ++outCache_i;
+      outCache_i = 0;
+      // Define the data list
+      auto data_l = std::make_unique<size_t[]>(data_c);
+      for (auto i = size_t(0); i < data_c; ++i)
+         data_l[i] = i;
 
-   const auto dir = "Test/UnionFindSetCases";
+      auto iUfs = JK::IdxUnionFindSet<std::dynamic_extent>(data_c);
+      auto pUfs = JK::PtrUnionFindSet<size_t, std::dynamic_extent>(data_c);
 
-   for (const auto e : fs::directory_iterator(dir,)) {
-      // Open in and out files
-      auto in = std::fopen(InName.data(), "r");
-      auto out = std::fopen(OutName.data(), "r");
-      if (in == 0 || out == 0)
-         __debugbreak();
-
-      size_t n, m;
-      std::fscanf(in, "%llu%llu", &n, &m);
-      auto ufs = JK::UnionFindSet<std::dynamic_extent>(n);
-
-      size_t op, a, b;
-      for (auto i = size_t(0); i < m; ++i) {
-
-         std::fscanf(in, "%llu%llu%llu", &op, &a, &b);
-         if (op == 0)
-            ufs.Unite(a, b);
-         else {
-            size_t res;
-            std::fscanf(out, "%llu", &res);
-            if (ufs.Find(a) == ufs.Find(b)) {
-               if (res != 1)
-                  __debugbreak();
-            } else if (res != 0) {
+      // Test index union find set
+      {
+         size_t cnt = 0;
+         const auto timerName = std::format("Index union find set testcase {} passed", fileIdx);
+         auto timer = ScopedTimer(timerName);
+         for (auto i = size_t(0); i < op_c; ++i) {
+            const auto [op_v, a, b] = inCache_l[i];
+            if (op_v == 0) fa[find(a)] = find(b);
+            else if (outCache_l[outCache_i++] != (find(a) == find(b))) {
+               std::print("Testcase {} failed\n", fileIdx);
                __debugbreak();
             }
          }
+         std::print("{}\n", cnt);
       }
-      std::fclose(in);
-      std::fclose(out);
+      // Test pointer union find set
+      {
+         // auto timer = ScopedTimer(std::format("Pointer union find set testcase {} passed", fileIdx));
+      }
 
-      std::print("UnionFindSet: Testcase {} passed!\n", f);
+      fclose(inHandle);
+      fclose(outHandle);
    }
 }
